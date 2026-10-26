@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-3">Donor List</h3>
+
+
+<!-- ================= SEARCH ================= -->
+
+<div class="mb-4">
+
+    <input
+        type="text"
+        id="donorSearch"
+        class="form-control"
+        placeholder="🔍 Search by name, blood group, phone, location or status..."
+        onkeyup="searchDonors()"
+    >
+
+</div>
+
+
+<!-- ================= DONOR TABLE ================= -->
+
+<div class="table-responsive">
+
+<table id="donorTable" class="table table-bordered table-striped">
+
+<tr class="table-dark">
+
+<th>Name</th>
+<th>Blood</th>
+<th>Phone</th>
+<th>Location</th>
+<th>Status</th>
+
+</tr>
+
+
+{% for d in donors %}
+
+<tr>
+
+<td>
+    {{d[0]}}
+</td>
+
+
+<td>
+
+<span class="badge bg-danger">
+    {{d[1]}}
+</span>
+
+</td>
+
+
+<td>
+    {{d[2]}}
+</td>
+
+
+<td>
+    {{d[3]}}
+</td>
+
+
+<td>
+
+{% if d[4] == "Available" %}
+
+    <span class="badge bg-success">
+        Available
+    </span>
+
+{% else %}
+
+    <span class="badge bg-secondary">
+        Unavailable
+    </span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+
+{% if not donors %}
+
+<tr>
+
+<td colspan="5" class="text-center text-muted">
+
+No donors found.
+
+</td>
+
+</tr>
+
+{% endif %}
+
+
+</table>
+
+</div>
+
+
+<!-- ================= SEARCH SCRIPT ================= -->
+
+<script>
+
+function searchDonors() {
+
+    let input = document.getElementById("donorSearch");
+
+    let filter = input.value.toLowerCase();
+
+    let table = document.getElementById("donorTable");
+
+    let rows = table.getElementsByTagName("tr");
+
+
+    // Skip table header
+
+    for (let i = 1; i < rows.length; i++) {
+
+        let rowText = rows[i].innerText.toLowerCase();
+
+
+        if (rowText.includes(filter)) {
+
+            rows[i].style.display = "";
+
+        } else {
+
+            rows[i].style.display = "none";
+
+        }
+
+    }
+
+}
+
+</script>
+
+
+{% endblock %}

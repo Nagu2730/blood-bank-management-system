@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Verification</title>
+    <style>
+        html { scroll-behavior: smooth; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef4f9;
+            color: #24364b;
+            background-image: linear-gradient(rgba(245,250,254,.90), rgba(245,250,254,.90));
+        }
+        .page { min-height: 100vh; padding: 28px 7%; }
+        .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+        .title { display:flex; align-items:center; gap:16px; }
+        .icon { font-size:52px; }
+        h1 { margin:0; font-size:44px; color:#17233b; }
+        .back-btn { background:#4b5a70; color:white; text-decoration:none; padding:11px 18px; border-radius:12px; font-weight:700; }
+        .card {
+            background:rgba(255,255,255,.96);
+            border-radius:24px;
+            box-shadow:0 10px 35px rgba(31,50,72,.10);
+            padding:28px;
+        }
+        .info { background:#eef3f9; border-radius:18px; padding:18px 18px; margin-bottom:22px; }
+        .info strong { display:block; font-size:18px; margin-bottom:7px; }
+        .search-row { display:grid; grid-template-columns: 1fr 205px; gap:25px; margin-bottom:26px; }
+        .search {
+            width:100%; padding:17px 20px; border:1px solid #d8dde5; border-radius:16px; font-size:18px; outline:none;
+        }
+        .clear {
+            border:none; border-radius:14px; background:#101a31; color:white; font-size:18px; font-weight:700; cursor:pointer;
+        }
+        .table-wrap { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; min-width:1000px; }
+        th { background:#111a31; color:white; padding:17px 16px; text-align:left; font-size:17px; }
+        td { padding:16px; border-bottom:1px solid #e0e5eb; font-size:17px; vertical-align:middle; }
+        tbody tr:nth-child(even) { background:#fafafa; }
+        tbody tr:hover { background:#f0f4f8; }
+        .sno { width:80px; text-align:center; font-weight:700; }
+        .name { font-weight:700; }
+        .status { display:inline-block; padding:9px 14px; border-radius:12px; font-weight:700; }
+        .pending { background:#f5a009; color:#fff; }
+        .fit { background:#159447; color:#fff; }
+        .unfit { background:#ed2332; color:#fff; }
+        .actions { display:flex; gap:7px; flex-wrap:wrap; }
+        .btn {
+            border:none; color:white; padding:9px 13px; border-radius:11px; font-weight:700; cursor:pointer; font-size:14px;
+        }
+        .fit-btn { background:#159447; }
+        .unfit-btn { background:#ed2332; }
+        .delete-btn { background:#111a31; }
+        form { display:inline; margin:0; }
+        .no-results { text-align:center; padding:35px; font-weight:700; color:#64748b; display:none; }
+        #backToTopBtn {
+            display:none; position:fixed; right:25px; bottom:25px; z-index:9999; background:#2563EB; color:white; border:none;
+            border-radius:12px; padding:12px 18px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(15,23,42,.25);
+        }
+        @media(max-width:800px){
+            .page { padding:18px; }
+            h1 { font-size:32px; }
+            .topbar { align-items:flex-start; gap:15px; }
+            .search-row { grid-template-columns:1fr; }
+            .clear { padding:15px; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="topbar">
+        <div class="title">
+            <div class="icon">🩺</div>
+            <h1>Health Verification</h1>
+        </div>
+        <a href="/admin_dashboard" class="back-btn">← Back</a>
+    </div>
+
+    <div class="card">
+        <div class="info">
+            <strong>Health Verification</strong>
+            Check donor health reports and mark donors as <b>Fit</b> or <b>Unfit</b> before donation.
+        </div>
+
+        <div class="search-row">
+            <input id="donorSearch" class="search" type="text"
+                   placeholder="🔍 Search by donor name, phone, health status or report..."
+                   oninput="filterDonors()">
+            <button class="clear" type="button" onclick="clearSearch()">Clear</button>
+        </div>
+
+        <div class="table-wrap">
+            <table id="donorTable">
+                <thead>
+                    <tr>
+                        <th class="sno">S.No</th>
+                        <th>Donor Name</th>
+                        <th>Phone</th>
+                        <th>Health Status</th>
+                        <th>Health Report</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for donor in donors %}
+                    <tr class="donor-row">
+                        <td class="sno">{{ loop.index }}</td>
+                        <td class="name">{{ donor[0] }}</td>
+                        <td>{{ donor[1] }}</td>
+                        <td>
+                            {% if donor[2] == 'Fit' %}
+                                <span class="status fit">✅ Fit</span>
+                            {% elif donor[2] == 'Unfit' %}
+                                <span class="status unfit">❌ Unfit</span>
+                            {% else %}
+                                <span class="status pending">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ donor[3] or 'None' }}</td>
+                        <td>
+                            <div class="actions">
+                                <form method="POST" action="/verify_health/{{ donor[1] }}/Fit">
+                                    <button class="btn fit-btn" type="submit">✅ Fit</button>
+                                </form>
+                                <form method="POST" action="/verify_health/{{ donor[1] }}/Unfit">
+                                    <button class="btn unfit-btn" type="submit">❌ Unfit</button>
+                                </form>
+                                <form method="POST" action="/delete_donor/{{ donor[1] }}" onsubmit="return confirm('Delete this donor?');">
+                                    <button class="btn delete-btn" type="submit">🗑️ Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results">No matching donors found.</div>
+        </div>
+    </div>
+</div>
+
+<button id="backToTopBtn" onclick="scrollToTop()" title="Back to Top">⬆️ Back to Top</button>
+
+<script>
+function filterDonors(){
+    const query = document.getElementById('donorSearch').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#donorTable tbody .donor-row');
+    let visible = 0;
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const show = text.includes(query);
+        row.style.display = show ? '' : 'none';
+        if(show) visible++;
+    });
+
+    let sno = 1;
+    rows.forEach(row => {
+        if(row.style.display !== 'none'){
+            row.querySelector('.sno').textContent = sno++;
+        }
+    });
+
+    document.getElementById('noResults').style.display = visible ? 'none' : 'block';
+}
+
+function clearSearch(){
+    document.getElementById('donorSearch').value = '';
+    filterDonors();
+}
+
+const backToTopBtn = document.getElementById('backToTopBtn');
+window.addEventListener('scroll', function(){
+    if(document.body.scrollTop > 300 || document.documentElement.scrollTop > 300){
+        backToTopBtn.style.display = 'block';
+    } else {
+        backToTopBtn.style.display = 'none';
+    }
+});
+
+function scrollToTop(){
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

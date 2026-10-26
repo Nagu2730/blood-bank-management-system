@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<style>
+
+body{
+    background:url("/static/images/blood_bg.png") no-repeat center center fixed;
+    background-size:cover;
+    color:#0A2540;
+    font-family:Arial,sans-serif;
+}
+
+.page-overlay{
+    background:rgba(248,250,252,0.92);
+    min-height:100vh;
+    padding-bottom:50px;
+}
+
+.container{
+    max-width:1200px;
+}
+
+h3{
+    color:#0F172A;
+    font-weight:700;
+    font-size:42px;
+}
+
+.card{
+    background:#FFFFFF;
+    border:none;
+    border-radius:20px;
+    box-shadow:0 6px 25px rgba(15,23,42,0.08);
+}
+
+.card h5{
+    color:#0F172A;
+    font-weight:700;
+    font-size:25px;
+}
+
+.form-control,
+.form-select{
+    border:1px solid #D6D3D1;
+    border-radius:12px;
+    padding:12px;
+    background:#FFFFFF;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#2563EB;
+    box-shadow:0 0 0 0.15rem rgba(37,99,235,0.20);
+}
+
+label{
+    color:#475569;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.btn{
+    border-radius:12px;
+    font-weight:600;
+    padding:10px 18px;
+}
+
+.btn-primary{
+    background:#2563EB;
+    border:none;
+}
+
+.btn-primary:hover{
+    background:#1D4ED8;
+}
+
+.btn-success{
+    background:#15803D;
+    border:none;
+}
+
+.btn-success:hover{
+    background:#166534;
+}
+
+.btn-danger{
+    background:#DC2626;
+    border:none;
+}
+
+.btn-danger:hover{
+    background:#B91C1C;
+}
+
+.btn-dark{
+    background:#0F172A;
+    border:none;
+}
+
+.btn-dark:hover{
+    background:#1E293B;
+}
+
+.btn-secondary{
+    background:#475569;
+    border:none;
+}
+
+.btn-secondary:hover{
+    background:#334155;
+}
+
+.btn-ads{
+    background:#7C3AED;
+    border:none;
+    color:white;
+}
+
+.btn-ads:hover{
+    background:#6D28D9;
+    color:white;
+}
+
+.table{
+    margin-bottom:0;
+}
+
+.table th{
+    background:#0F172A !important;
+    color:#FFFFFF !important;
+    padding:14px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+.table td{
+    vertical-align:middle;
+    padding:14px;
+    color:#475569;
+}
+
+.table tbody tr:hover{
+    background:#F8FAFC;
+}
+
+.serial-no{
+    font-weight:700;
+    color:#0F172A;
+    text-align:center;
+}
+
+.donor-name{
+    font-weight:600;
+    color:#0F172A;
+}
+
+.badge{
+    padding:8px 12px;
+    border-radius:10px;
+}
+
+.settings-info{
+    background:#F1F5F9;
+    border-radius:14px;
+    padding:15px;
+    margin-bottom:20px;
+    color:#475569;
+}
+
+.settings-info strong{
+    color:#0F172A;
+}
+
+.action-buttons{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.action-buttons form{
+    margin:0;
+}
+
+.health-box{
+    background:#FEF2F2;
+    border-radius:16px;
+    padding:20px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.total-donors{
+    background:#EFF6FF;
+    color:#1D4ED8;
+    border:1px solid #BFDBFE;
+    padding:8px 14px;
+    border-radius:12px;
+    font-weight:700;
+}
+
+.refresh-status{
+    background:#ECFDF5;
+    color:#166534;
+    border:1px solid #BBF7D0;
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+
+    h3{
+        font-size:32px;
+    }
+
+    .action-buttons{
+        flex-direction:column;
+    }
+
+    .refresh-status{
+        width:100%;
+        text-align:center;
+    }
+
+}
+
+
+
+html{
+    scroll-behavior:smooth;
+}
+
+#backToTopBtn{
+    display:none;
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    z-index:9999;
+    background:#2563EB;
+    color:white;
+    border:none;
+    border-radius:12px;
+    padding:12px 18px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(15,23,42,0.25);
+    transition:all 0.2s ease;
+}
+
+#backToTopBtn:hover{
+    background:#1D4ED8;
+    transform:translateY(-2px);
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="page-overlay">
+
+<div class="container py-4">
+
+
+<!-- ================= TITLE ================= -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3 class="mb-0">
+Admin Dashboard
+</h3>
+
+<a
+href="/admin_home"
+class="btn btn-secondary">
+
+← Back
+
+</a>
+
+</div>
+
+
+<!-- ================= SEARCH ================= -->
+
+<div class="card p-4 mb-4">
+
+<h5 class="mb-3">
+🔍 Search Donor
+</h5>
+
+<form
+method="GET"
+action="/admin_dashboard"
+id="searchForm">
+
+<input
+type="text"
+name="search"
+value="{{ search }}"
+placeholder="Search donor by name..."
+class="form-control"
+id="searchInput">
+
+</form>
+
+</div>
+
+
+<!-- ================= ACTIONS ================= -->
+
+<div class="card p-4 mb-4">
+
+<h5 class="mb-3">
+⚡ Admin Actions
+</h5>
+
+<div class="d-flex flex-wrap gap-2">
+
+<a
+href="/admin_feedback"
+class="btn btn-dark">
+
+View Feedback
+
+</a>
+
+<a
+href="/health_dashboard"
+class="btn btn-success">
+
+Health Verification
+
+</a>
+
+<a
+href="/blood_requests"
+class="btn btn-primary">
+
+Blood Requests
+
+</a>
+
+<a
+href="/ads_dashboard"
+class="btn btn-ads">
+
+🧠 ADS Dashboard
+
+</a>
+
+<a
+href="/donation_history"
+class="btn btn-secondary">
+
+🩸 Donation History
+
+</a>
+
+</div>
+
+</div>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<div class="card p-4 mb-4">
+
+<h5 class="mb-3">
+⚙️ System Settings
+</h5>
+
+<div class="settings-info">
+
+<strong>Coins Per Donation:</strong>
+
+Number of reward coins given to donor after donation.
+
+<br><br>
+
+<strong>Donation Interval:</strong>
+
+Number of days required before the donor can donate again.
+
+</div>
+
+<form
+method="POST"
+action="/update_settings"
+id="settingsForm">
+
+<label>
+Coins Per Donation
+</label>
+
+<input
+type="number"
+name="coins"
+value="{{ settings[0] }}"
+class="form-control mb-3"
+min="0"
+required>
+
+
+<label>
+Donation Interval (Days)
+</label>
+
+<input
+type="number"
+name="interval"
+value="{{ settings[1] }}"
+class="form-control mb-3"
+min="1"
+required>
+
+
+<button
+type="submit"
+class="btn btn-primary">
+
+Update Settings
+
+</button>
+
+</form>
+
+</div>
+
+
+<!-- ================= DONORS ================= -->
+
+<div class="card p-4 mb-4">
+
+<div class="section-header mb-3">
+
+<h5 class="mb-0">
+👥 Donor List
+</h5>
+
+<div class="d-flex gap-2 flex-wrap">
+
+<span class="total-donors">
+Total Donors: {{ donors|length }}
+</span>
+
+<span class="refresh-status" id="refreshStatus">
+🔄 Auto Refresh ON
+</span>
+
+</div>
+
+</div>
+
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover">
+
+<thead>
+
+<tr>
+
+<th style="width:80px;">
+S.No
+</th>
+
+<th>
+Name
+</th>
+
+<th>
+Blood
+</th>
+
+<th>
+Coins
+</th>
+
+<th>
+Last Donation
+</th>
+
+<th>
+Action
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="donorTableBody">
+
+{% for d in donors %}
+
+<tr>
+
+<td class="serial-no">
+{{ loop.index }}
+</td>
+
+<td class="donor-name">
+{{ d[0] }}
+</td>
+
+<td>
+
+<span class="badge bg-danger">
+{{ d[2] }}
+</span>
+
+</td>
+
+<td>
+{{ d[3] }}
+</td>
+
+<td>
+{{ d[4] if d[4] else "None" }}
+</td>
+
+<td>
+
+<div class="action-buttons">
+
+<form
+method="POST"
+action="/admin_verify/{{ d[1] }}">
+
+<button
+type="submit"
+class="btn btn-success btn-sm">
+
+Verify
+
+</button>
+
+</form>
+
+
+<form
+method="POST"
+action="/delete_donor/{{ d[1] }}"
+onsubmit="return confirm('Are you sure you want to delete this donor?');">
+
+<button
+type="submit"
+class="btn btn-danger btn-sm">
+
+Delete
+
+</button>
+
+</form>
+
+</div>
+
+</td>
+
+</tr>
+
+
+{% else %}
+
+<tr>
+
+<td
+colspan="6"
+class="text-center text-muted">
+
+No donors found.
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- ================= ADD HEALTH REPORT ================= -->
+
+<div class="card p-4">
+
+<h5 class="mb-3">
+🩺 Add Health Report
+</h5>
+
+<div class="health-box">
+
+<form
+method="POST"
+action="/add_health_report"
+id="healthForm">
+
+<label>
+Donor Name
+</label>
+
+<input
+type="text"
+name="donor_name"
+placeholder="Enter donor name"
+class="form-control mb-3"
+required>
+
+
+<label>
+Hemoglobin (g/dL)
+</label>
+
+<input
+type="number"
+step="0.1"
+name="hemoglobin"
+placeholder="Enter hemoglobin value"
+class="form-control mb-3"
+required>
+
+
+<label>
+Health Status
+</label>
+
+<select
+name="status"
+class="form-select mb-3"
+required>
+
+<option value="Pending">
+Pending
+</option>
+
+<option value="Healthy">
+Healthy
+</option>
+
+<option value="Not Eligible">
+Not Eligible
+</option>
+
+</select>
+
+
+<button
+type="submit"
+class="btn btn-danger">
+
+🩺 Add Health Report
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+<!-- ================= BACK TO TOP ================= -->
+
+<button
+    id="backToTopBtn"
+    onclick="scrollToTop()"
+    title="Back to Top">
+    ⬆️ Back to Top
+</button>
+
+<script>
+
+const backToTopBtn = document.getElementById("backToTopBtn");
+
+window.addEventListener("scroll", function(){
+
+    if(
+        document.body.scrollTop > 300 ||
+        document.documentElement.scrollTop > 300
+    ){
+        backToTopBtn.style.display = "block";
+    }else{
+        backToTopBtn.style.display = "none";
+    }
+
+});
+
+function scrollToTop(){
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+</script>
+
+
+<!-- ================= SETTINGS SUCCESS POPUP ================= -->
+
+<script>
+
+const params =
+new URLSearchParams(window.location.search);
+
+if(params.get("updated") === "1"){
+
+    alert("✅ Settings updated successfully!");
+
+    window.history.replaceState(
+        {},
+        document.title,
+        "/admin_dashboard"
+    );
+
+}
+
+</script>
+
+
+<!-- ================= AUTO REFRESH ================= -->
+
+<script>
+
+let formIsBeingEdited = false;
+
+const forms = document.querySelectorAll("form");
+
+forms.forEach(function(form){
+
+    form.addEventListener("input", function(){
+        formIsBeingEdited = true;
+    });
+
+    form.addEventListener("change", function(){
+        formIsBeingEdited = true;
+    });
+
+});
+
+
+setInterval(function(){
+
+    if(formIsBeingEdited){
+        return;
+    }
+
+    const activeElement = document.activeElement;
+
+    if(
+        activeElement &&
+        (
+            activeElement.tagName === "INPUT" ||
+            activeElement.tagName === "SELECT" ||
+            activeElement.tagName === "TEXTAREA"
+        )
+    ){
+        return;
+    }
+
+    window.location.reload();
+
+}, 20000);
+
+</script>
+
+
+</body>
+
+</html>
